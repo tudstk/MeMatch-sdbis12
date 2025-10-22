@@ -37,9 +37,11 @@ Cloud Storage: Firebase
 ![WhatsApp Image 2025-10-22 at 16 54 04](https://github.com/user-attachments/assets/b7ea4d7b-0e25-4fdd-9668-32f717553b5e)
 
 *UML*
+
 ![WhatsApp Image 2025-10-22 at 17 14 39](https://github.com/user-attachments/assets/4de39c68-662e-4f10-9fb3-efda52e50086)
 
 
 ### 7. Backlog
-https://trello.com/b/KjOjJSrM/multi-tiered-software-development
+https://trello.com/b/KjOjJSrM/multi-tiered-software-development --> task descriptions
+
 
