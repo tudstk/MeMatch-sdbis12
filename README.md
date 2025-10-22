@@ -14,5 +14,9 @@ Backend: Spring boot
 Database: PostgreSQL
 Cloud Storage: Firebase
 ### 6. Diagrame
+*C4*
+<img width="2091" height="388" alt="C4-level1" src="https://github.com/user-attachments/assets/f6db8de7-d282-466b-b058-3958ff125d07" />
+<img width="2740" height="787" alt="C4-level2" src="https://github.com/user-attachments/assets/8f677f07-58b0-4558-b9c2-9397f45f8d61" />
 ### 7. Backlog
 https://trello.com/b/KjOjJSrM/multi-tiered-software-development
+
