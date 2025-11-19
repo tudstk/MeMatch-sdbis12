@@ -34,9 +34,7 @@ public class Match {
         return match;
     }
 
-    public void markAsMatched() {
-        this.matched = true;
-    }
+    public void markAsMatched() { this.matched = true; }
 
     public Long getId() { return id; }
     public User getUser1() { return user1; }

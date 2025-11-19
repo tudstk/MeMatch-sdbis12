@@ -29,9 +29,7 @@ public class Meme {
         return meme;
     }
 
-    public void updateCaption(String caption) {
-        this.caption = caption;
-    }
+    public void updateCaption(String caption) { this.caption = caption; }
 
     public Long getId() { return id; }
     public String getCaption() { return caption; }

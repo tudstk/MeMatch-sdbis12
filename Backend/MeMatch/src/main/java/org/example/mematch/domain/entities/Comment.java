@@ -31,9 +31,7 @@ public class Comment {
         return comment;
     }
 
-    public void updateContent(String content) {
-        this.content = content;
-    }
+    public void updateContent(String content) { this.content = content; }
 
     public Long getId() { return id; }
     public String getContent() { return content; }
