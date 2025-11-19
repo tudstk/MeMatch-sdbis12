@@ -34,6 +34,7 @@ public class MemeServiceImpl implements MemeService {
 
     @Override
     public void deleteMeme(Long memeId) {
-        memeRepository.deleteById(memeId);
+        memeRepository.findById(memeId)
+                .ifPresent(memeRepository::delete);
     }
 }

@@ -1,8 +1,18 @@
 package org.example.mematch.infrastructure.persistence.jpa;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.example.mematch.domain.entities.Meme;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MemeRepository extends JpaRepository<Meme, Long> {}
+public class MemeRepository extends EntityRepositoryJPA<Meme, Long> {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+}

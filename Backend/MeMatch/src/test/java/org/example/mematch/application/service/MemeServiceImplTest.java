@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -78,13 +79,18 @@ class MemeServiceImplTest {
     }
 
     @Test
-    void deleteMeme_ShouldCallRepositoryDeleteById() {
+    void deleteMeme_ShouldLoadAndDeleteMeme() {
         Long memeId = 1L;
+        Meme meme = new Meme();
+
+        when(memeRepository.findById(memeId)).thenReturn(Optional.of(meme));
 
         memeService.deleteMeme(memeId);
 
-        verify(memeRepository, times(1)).deleteById(memeId);
+        verify(memeRepository, times(1)).findById(memeId);
+        verify(memeRepository, times(1)).delete(meme);
     }
+
 
     @Test
     void createMeme_WithNullCaption_ShouldStillCreateMeme() {

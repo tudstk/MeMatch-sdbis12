@@ -19,7 +19,7 @@ public class Meme {
     @JoinColumn(name = "user_id")
     private User user;
 
-    protected Meme() {}
+    public Meme() {}
 
     public static Meme create(User user, String imageUrl, String caption) {
         Meme meme = new Meme();
