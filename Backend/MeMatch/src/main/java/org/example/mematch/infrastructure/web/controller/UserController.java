@@ -3,6 +3,9 @@ package org.example.mematch.infrastructure.web.controller;
 import org.example.mematch.application.service.UserServiceImpl;
 import org.example.mematch.domain.entities.Meme;
 import org.example.mematch.domain.entities.User;
+import org.example.mematch.infrastructure.web.exception.GlobalExceptionHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,33 +21,40 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> all() {
-        return userService.getAll();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAll();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable Long id) {
-        return userService.getById(id).orElseThrow();
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userService.getById(id)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with id " + id + " not found"));
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    public User create(@RequestBody CreateUserRequest r) {
-        return userService.createUser(r.email, r.username, r.passwordHash);
+    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest r) {
+        User user = userService.createUser(r.email, r.username, r.passwordHash);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @PutMapping("/{id}/profile")
-    public User updateProfile(@PathVariable Long id, @RequestBody UpdateProfileRequest r) {
-        return userService.updateProfile(id, r.description, r.profilePictureUrl);
+    public ResponseEntity<User> updateProfile(@PathVariable Long id, @RequestBody UpdateProfileRequest r) {
+        User user = userService.updateProfile(id, r.description, r.profilePictureUrl);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/{id}/memes")
-    public Meme postMeme(@PathVariable Long id, @RequestBody PostMemeRequest r) {
-        return userService.postMeme(id, r.imageUrl, r.caption);
+    public ResponseEntity<Meme> postMeme(@PathVariable Long id, @RequestBody PostMemeRequest r) {
+        Meme meme = userService.postMeme(id, r.imageUrl, r.caption);
+        return ResponseEntity.status(HttpStatus.CREATED).body(meme);
     }
 
     @DeleteMapping("/{userId}/memes/{memeId}")
-    public void deleteMeme(@PathVariable Long userId, @PathVariable Long memeId) {
+    public ResponseEntity<Void> deleteMeme(@PathVariable Long userId, @PathVariable Long memeId) {
         userService.removeMeme(userId, memeId);
+        return ResponseEntity.noContent().build();
     }
 
     public static class CreateUserRequest {
