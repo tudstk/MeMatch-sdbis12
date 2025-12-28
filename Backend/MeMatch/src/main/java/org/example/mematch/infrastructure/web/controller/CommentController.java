@@ -1,5 +1,10 @@
 package org.example.mematch.infrastructure.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.mematch.application.service.CommentServiceImpl;
 import org.example.mematch.domain.entities.Comment;
 import org.example.mematch.infrastructure.web.exception.GlobalExceptionHandler;
@@ -11,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments")
+@Tag(name = "Comments", description = "Comment management API endpoints")
 public class CommentController {
 
     private final CommentServiceImpl commentService;
@@ -20,9 +26,14 @@ public class CommentController {
     }
 
     @PostMapping("/meme/{memeId}/user/{userId}")
+    @Operation(summary = "Create a comment", description = "Add a comment to a meme")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Comment successfully created"),
+            @ApiResponse(responseCode = "404", description = "User or meme not found")
+    })
     public ResponseEntity<Comment> createComment(
-            @PathVariable Long memeId,
-            @PathVariable Long userId,
+            @Parameter(description = "Meme ID", required = true) @PathVariable Long memeId,
+            @Parameter(description = "User ID", required = true) @PathVariable Long userId,
             @RequestBody CreateCommentRequest request) {
         try {
             Comment comment = commentService.createComment(userId, memeId, request.content);
@@ -33,7 +44,13 @@ public class CommentController {
     }
 
     @GetMapping("/meme/{memeId}")
-    public ResponseEntity<List<Comment>> getCommentsByMeme(@PathVariable Long memeId) {
+    @Operation(summary = "Get comments by meme", description = "Retrieve all comments for a specific meme")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved comments"),
+            @ApiResponse(responseCode = "404", description = "Meme not found")
+    })
+    public ResponseEntity<List<Comment>> getCommentsByMeme(
+            @Parameter(description = "Meme ID", required = true) @PathVariable Long memeId) {
         try {
             List<Comment> comments = commentService.getCommentsByMemeId(memeId);
             return ResponseEntity.ok(comments);
@@ -43,7 +60,13 @@ public class CommentController {
     }
 
     @GetMapping("/{commentId}")
-    public ResponseEntity<Comment> getComment(@PathVariable Long commentId) {
+    @Operation(summary = "Get comment by ID", description = "Retrieve a specific comment by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comment found"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public ResponseEntity<Comment> getComment(
+            @Parameter(description = "Comment ID", required = true) @PathVariable Long commentId) {
         try {
             Comment comment = commentService.getCommentById(commentId);
             return ResponseEntity.ok(comment);
@@ -53,8 +76,13 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
+    @Operation(summary = "Update comment", description = "Update the content of a comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Comment successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
     public ResponseEntity<Comment> updateComment(
-            @PathVariable Long commentId,
+            @Parameter(description = "Comment ID", required = true) @PathVariable Long commentId,
             @RequestBody UpdateCommentRequest request) {
         try {
             Comment comment = commentService.updateComment(commentId, request.content);
@@ -65,7 +93,13 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+    @Operation(summary = "Delete a comment", description = "Delete a comment from the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Comment successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public ResponseEntity<Void> deleteComment(
+            @Parameter(description = "Comment ID", required = true) @PathVariable Long commentId) {
         try {
             commentService.deleteComment(commentId);
             return ResponseEntity.noContent().build();
