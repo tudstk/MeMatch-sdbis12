@@ -48,6 +48,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsersForFeed(Long userId) {
+        // Get current user - refresh from database to ensure we have latest preferences
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        // Debug: Log current user preferences
+        System.out.println("Feed filter for user " + userId + ": genderPref=" + currentUser.getGenderPreference() + 
+                          ", ageMin=" + currentUser.getAgeMinPreference() + ", ageMax=" + currentUser.getAgeMaxPreference());
+        
         // Get all users
         List<User> allUsers = userRepository.findAll();
         
@@ -68,10 +76,53 @@ public class UserServiceImpl implements UserService {
                 })
                 .collect(Collectors.toSet());
         
-        // Filter: exclude current user and matched users
+        // Filter: exclude current user, matched users, and apply preferences
         return allUsers.stream()
                 .filter(u -> !u.getId().equals(userId) && !matchedUserIds.contains(u.getId()))
+                .filter(u -> matchesGenderPreference(currentUser, u))
+                .filter(u -> matchesAgePreference(currentUser, u))
                 .toList();
+    }
+    
+    private boolean matchesGenderPreference(User currentUser, User otherUser) {
+        // If current user has no gender preference, show all users
+        if (currentUser.getGenderPreference() == null || currentUser.getGenderPreference().isEmpty()) {
+            return true;
+        }
+        
+        // If other user has no gender, don't show them
+        if (otherUser.getGender() == null || otherUser.getGender().isEmpty()) {
+            return false;
+        }
+        
+        // Check if other user's gender matches preference
+        return currentUser.getGenderPreference().equalsIgnoreCase(otherUser.getGender());
+    }
+    
+    private boolean matchesAgePreference(User currentUser, User otherUser) {
+        // If current user has no age preference, show all users
+        if (currentUser.getAgeMinPreference() == null || currentUser.getAgeMaxPreference() == null) {
+            return true;
+        }
+        
+        // If other user has no age, don't show them
+        if (otherUser.getAge() == null) {
+            return false;
+        }
+        
+        // Check if other user's age is within preference range
+        Integer otherAge = otherUser.getAge();
+        Integer minAge = currentUser.getAgeMinPreference();
+        Integer maxAge = currentUser.getAgeMaxPreference();
+        
+        boolean matches = otherAge >= minAge && otherAge <= maxAge;
+        
+        // Debug logging
+        if (!matches) {
+            System.out.println("Age filter: User " + otherUser.getId() + " (age: " + otherAge + ") does not match preference range [" + minAge + "-" + maxAge + "]");
+        }
+        
+        return matches;
     }
 
     @Override
@@ -95,8 +146,24 @@ public class UserServiceImpl implements UserService {
     public User updatePreferences(Long id, String genderPreference, Integer ageMinPreference, Integer ageMaxPreference, List<HumourTag> humourTagsPreference) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        
+        // Log before update
+        System.out.println("Before update - User " + id + ": genderPref=" + user.getGenderPreference() + 
+                          ", ageMin=" + user.getAgeMinPreference() + ", ageMax=" + user.getAgeMaxPreference() +
+                          ", humourTagsPref count=" + (user.getHumourTagsPreference() != null ? user.getHumourTagsPreference().size() : 0));
+        
         user.updatePreferences(genderPreference, ageMinPreference, ageMaxPreference, humourTagsPreference);
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        userRepository.flush(); // Explicitly flush to ensure preferences are persisted
+        
+        // Verify after save
+        User verified = userRepository.findById(id).orElse(null);
+        System.out.println("After update - User " + id + ": genderPref=" + (verified != null ? verified.getGenderPreference() : "null") + 
+                          ", ageMin=" + (verified != null ? verified.getAgeMinPreference() : "null") + 
+                          ", ageMax=" + (verified != null ? verified.getAgeMaxPreference() : "null") +
+                          ", humourTagsPref count=" + (verified != null && verified.getHumourTagsPreference() != null ? verified.getHumourTagsPreference().size() : 0));
+        
+        return saved;
     }
 
     @Override

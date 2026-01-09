@@ -82,7 +82,11 @@ public class User {
         this.genderPreference = genderPreference;
         this.ageMinPreference = ageMinPreference;
         this.ageMaxPreference = ageMaxPreference;
-        this.humourTagsPreference = humourTagsPreference != null ? new ArrayList<>(humourTagsPreference) : new ArrayList<>();
+        // Clear existing collection first to ensure JPA detects the change
+        this.humourTagsPreference.clear();
+        if (humourTagsPreference != null && !humourTagsPreference.isEmpty()) {
+            this.humourTagsPreference.addAll(humourTagsPreference);
+        }
     }
 
     public Long getId() { return id; }

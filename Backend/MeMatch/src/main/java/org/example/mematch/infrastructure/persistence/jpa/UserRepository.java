@@ -35,4 +35,8 @@ public class UserRepository extends EntityRepositoryJPA<User, Long> {
 
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
+
+    public void flush() {
+        em.flush();
+    }
 }
