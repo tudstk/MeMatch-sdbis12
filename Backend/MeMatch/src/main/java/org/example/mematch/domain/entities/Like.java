@@ -1,9 +1,11 @@
 package org.example.mematch.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "likes")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Like {
 
     @Id
