@@ -81,12 +81,29 @@ public class LikeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/user/{likerUserId}/liked-user/{memeOwnerUserId}")
+    @Operation(summary = "Check if user liked another user's memes", 
+               description = "Check if a user has liked any memes from another user")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved like status")
+    public ResponseEntity<UserLikeStatusResponse> hasUserLikedUserMemes(
+            @Parameter(description = "User ID who might have liked", required = true) @PathVariable Long likerUserId,
+            @Parameter(description = "User ID who owns the memes", required = true) @PathVariable Long memeOwnerUserId) {
+        boolean hasLiked = likeService.hasUserLikedUserMemes(likerUserId, memeOwnerUserId);
+        UserLikeStatusResponse response = new UserLikeStatusResponse();
+        response.hasLiked = hasLiked;
+        return ResponseEntity.ok(response);
+    }
+
     public static class LikeStatusResponse {
         public boolean hasLiked;
     }
 
     public static class LikeCountResponse {
         public long count;
+    }
+
+    public static class UserLikeStatusResponse {
+        public boolean hasLiked;
     }
 }
 

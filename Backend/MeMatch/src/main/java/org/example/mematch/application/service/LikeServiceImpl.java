@@ -64,4 +64,27 @@ public class LikeServiceImpl implements LikeService {
                 .filter(l -> l.getMeme().getId().equals(memeId))
                 .count();
     }
+
+    /**
+     * Check if a user has liked any of another user's memes
+     * @param likerUserId The user who might have liked memes
+     * @param memeOwnerUserId The user who owns the memes
+     * @return true if the liker has liked at least one meme from the owner
+     */
+    public boolean hasUserLikedUserMemes(Long likerUserId, Long memeOwnerUserId) {
+        // Get all memes owned by the meme owner
+        var ownerMemeIds = memeRepository.findAll().stream()
+                .filter(m -> m.getUser().getId().equals(memeOwnerUserId))
+                .map(m -> m.getId())
+                .toList();
+        
+        if (ownerMemeIds.isEmpty()) {
+            return false;
+        }
+        
+        // Check if the liker has liked any of these memes
+        return likeRepository.findAll().stream()
+                .anyMatch(l -> l.getUser().getId().equals(likerUserId) &&
+                              ownerMemeIds.contains(l.getMeme().getId()));
+    }
 }

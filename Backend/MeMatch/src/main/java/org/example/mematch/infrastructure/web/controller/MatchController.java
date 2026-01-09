@@ -70,6 +70,47 @@ public class MatchController {
         return ResponseEntity.status(HttpStatus.CREATED).body(match);
     }
 
+    @PostMapping("/like/{likerUserId}/{likedUserId}")
+    @Operation(summary = "Like a user", description = "Like a user (swipe right). Creates a match if mutual.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully liked"),
+            @ApiResponse(responseCode = "201", description = "Match created (mutual like)"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<LikeUserResponse> likeUser(
+            @Parameter(description = "User ID who is liking", required = true) @PathVariable Long likerUserId,
+            @Parameter(description = "User ID being liked", required = true) @PathVariable Long likedUserId) {
+        User liker = userRepository.findById(likerUserId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with id " + likerUserId + " not found"));
+        User liked = userRepository.findById(likedUserId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with id " + likedUserId + " not found"));
+        
+        Match match = matchService.likeUser(liker, liked);
+        LikeUserResponse response = new LikeUserResponse();
+        response.match = match;
+        response.isMatch = match.isMatched();
+        
+        return ResponseEntity.status(match.isMatched() ? HttpStatus.CREATED : HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/user/{userId}/liked-by/{otherUserId}")
+    @Operation(summary = "Check if user has liked another user", 
+               description = "Check if a user has liked another user")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved like status")
+    public ResponseEntity<HasLikedResponse> hasUserLikedUser(
+            @Parameter(description = "User ID who might have liked", required = true) @PathVariable Long userId,
+            @Parameter(description = "User ID who might be liked", required = true) @PathVariable Long otherUserId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with id " + userId + " not found"));
+        User otherUser = userRepository.findById(otherUserId)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with id " + otherUserId + " not found"));
+        
+        boolean hasLiked = matchService.hasUserLikedUser(user, otherUser);
+        HasLikedResponse response = new HasLikedResponse();
+        response.hasLiked = hasLiked;
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/user/{userId}")
     @Operation(summary = "Get matches for user", description = "Retrieve all matches for a specific user")
     @ApiResponses(value = {
@@ -101,5 +142,14 @@ public class MatchController {
     public static class CreateMatchRequest {
         public Long user1Id;
         public Long user2Id;
+    }
+
+    public static class LikeUserResponse {
+        public Match match;
+        public boolean isMatch;
+    }
+
+    public static class HasLikedResponse {
+        public boolean hasLiked;
     }
 }

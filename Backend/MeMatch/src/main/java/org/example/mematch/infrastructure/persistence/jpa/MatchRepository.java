@@ -17,6 +17,10 @@ public class MatchRepository extends EntityRepositoryJPA<Match, Long> {
         return em;
     }
 
+    public void flush() {
+        em.flush();
+    }
+
     public boolean existsByUser1AndUser2(User u1, User u2) {
         return !em.createQuery(
                         "SELECT m FROM Match m " +

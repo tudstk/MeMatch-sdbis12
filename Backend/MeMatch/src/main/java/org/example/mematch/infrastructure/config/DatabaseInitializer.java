@@ -20,6 +20,7 @@ public class DatabaseInitializer {
         createCommentsTable();
         createLikesTable();
         createMatchesTable();
+        createMessagesTable();
         System.out.println("✅ Database tables ensured (via DatabaseInitializer)");
     }
 
@@ -98,6 +99,24 @@ public class DatabaseInitializer {
                     REFERENCES users(id)
                     ON DELETE CASCADE,
                 CONSTRAINT unique_match_pair UNIQUE (user1_id, user2_id)
+            );
+        """);
+    }
+
+    private void createMessagesTable() {
+        jdbcTemplate.execute("""
+            CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                match_id BIGINT NOT NULL,
+                sender_id BIGINT NOT NULL,
+                content TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_message_match FOREIGN KEY (match_id)
+                    REFERENCES matches(id)
+                    ON DELETE CASCADE,
+                CONSTRAINT fk_message_sender FOREIGN KEY (sender_id)
+                    REFERENCES users(id)
+                    ON DELETE CASCADE
             );
         """);
     }
