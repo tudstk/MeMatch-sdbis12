@@ -70,7 +70,6 @@ public class LikeServiceImpl implements LikeService {
      * @param likerUserId The user who might have liked memes
      * @param memeOwnerUserId The user who owns the memes
      * @return true if the liker has liked at least one meme from the owner
-     * test comment
      */
     public boolean hasUserLikedUserMemes(Long likerUserId, Long memeOwnerUserId) {
         // Get all memes owned by the meme owner

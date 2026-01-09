@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.example.mematch.domain.entities.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -38,5 +39,13 @@ public class UserRepository extends EntityRepositoryJPA<User, Long> {
 
     public void flush() {
         em.flush();
+    }
+
+    public List<User> searchByUsername(String query) {
+        return em.createQuery(
+                        "SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(:query) ORDER BY u.username", User.class)
+                .setParameter("query", "%" + query + "%")
+                .setMaxResults(10) // Limit to 10 results
+                .getResultList();
     }
 }

@@ -110,6 +110,21 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search users by username", description = "Search for users by username (case-insensitive, partial match)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved search results"),
+            @ApiResponse(responseCode = "400", description = "Invalid query")
+    })
+    public ResponseEntity<List<User>> searchUsers(
+            @Parameter(description = "Search query (username)", required = true) @RequestParam String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+        List<User> users = userService.searchUsersByUsername(q);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/humour-tags")
     @Operation(summary = "Get all humour tags", description = "Retrieve a list of all available humour tags")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of humour tags")

@@ -17,6 +17,8 @@ public interface UserService {
 
     List<User> getUsersForFeed(Long userId);
 
+    List<User> searchUsersByUsername(String query);
+
     User updateProfile(Long id, String description, String imageUrl);
     
     User updateProfileDetails(Long id, Integer age, String gender, String city, String country, List<HumourTag> humourTags);

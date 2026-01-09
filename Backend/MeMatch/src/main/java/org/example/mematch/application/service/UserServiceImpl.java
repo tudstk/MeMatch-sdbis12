@@ -47,6 +47,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> searchUsersByUsername(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return userRepository.searchByUsername(query.trim());
+    }
+
+    @Override
     public List<User> getUsersForFeed(Long userId) {
         // Get current user - refresh from database to ensure we have latest preferences
         User currentUser = userRepository.findById(userId)
