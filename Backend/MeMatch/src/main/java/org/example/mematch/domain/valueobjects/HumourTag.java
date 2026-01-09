@@ -1,0 +1,29 @@
+package org.example.mematch.domain.valueobjects;
+
+public enum HumourTag {
+    DARK_HUMOUR,
+    LIGHT_HUMOUR,
+    DOGS_MEMES,
+    CATS_MEMES,
+    ANIMALS_MEMES,
+    PROGRAMMING_MEMES,
+    GAMING_MEMES,
+    MOVIE_MEMES,
+    TV_SHOW_MEMES,
+    POLITICAL_MEMES,
+    RELATIONSHIP_MEMES,
+    WORK_MEMES,
+    SCHOOL_MEMES,
+    FOOD_MEMES,
+    FITNESS_MEMES,
+    TRAVEL_MEMES,
+    MUSIC_MEMES,
+    SPORTS_MEMES,
+    SCIENCE_MEMES,
+    HISTORY_MEMES,
+    PHILOSOPHY_MEMES,
+    WHOLESOME_MEMES,
+    SARCASM,
+    IRONY,
+    PUNS
+}
